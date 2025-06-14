@@ -8,7 +8,7 @@ env:
   JAR_NAME: driver_charging_session_authenticator-1.0.0.jar
   LOCAL_JAR_PATH: build/libs/driver_charging_session_authenticator-1.0.0.jar
   APP_DIR: /home/ec2-user/dcsl
-  # RabbitMQ variables from secrets
+  # RabbitMQ environment variables from GitHub Secrets
   RABBITMQ_HOST: ${{ secrets.RABBITMQ_HOST }}
   RABBITMQ_PORT: ${{ secrets.RABBITMQ_PORT }}
   RABBITMQ_USER: ${{ secrets.RABBITMQ_USER }}
@@ -20,10 +20,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repo
+      - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Set up SSH
+      - name: Set up SSH key
         run: |
           mkdir -p ~/.ssh
           echo "${{ secrets.EC2_KEY }}" > ~/.ssh/id_rsa
@@ -33,18 +33,18 @@ jobs:
       - name: Build JAR (skip tests)
         run: ./gradlew bootJar -x test
 
-      - name: Ensure JAR and Dockerfile exist
+      - name: Check for JAR and Dockerfile
         run: |
           if [ ! -f "${{ env.LOCAL_JAR_PATH }}" ]; then
-            echo "JAR file not found: ${{ env.LOCAL_JAR_PATH }}"
+            echo "JAR file not found at ${{ env.LOCAL_JAR_PATH }}"
             exit 1
           fi
           if [ ! -f "Dockerfile" ]; then
-            echo "Dockerfile not found in repo root."
+            echo "Dockerfile not found in repo root"
             exit 1
           fi
 
-      - name: Copy files to EC2
+      - name: Copy Dockerfile and JAR to EC2
         run: |
           ssh ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} "mkdir -p $APP_DIR"
           scp Dockerfile ${{ env.LOCAL_JAR_PATH }} ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}:$APP_DIR/
@@ -67,17 +67,15 @@ jobs:
             echo "Current directory: $(pwd)"
             echo "Files in directory:"
             ls -l
-            if [ ! -f "Dockerfile" ]; then
-              echo "ERROR: Dockerfile not found in $APP_DIR"
-              exit 1
-            fi
-            if [ ! -f "${JAR_NAME}" ]; then
-              echo "ERROR: JAR file not found in $APP_DIR"
-              exit 1
-            fi
+
+            # Stop and remove existing container if any
             docker stop dcsl || true
             docker rm dcsl || true
+
+            # Build the Docker image
             docker build -t dcsl .
+
+            # Run the container with environment variables and port mapping
             docker run -d --name dcsl \
               -p 3000:3000 \
               -e RABBITMQ_HOST="${RABBITMQ_HOST}" \
