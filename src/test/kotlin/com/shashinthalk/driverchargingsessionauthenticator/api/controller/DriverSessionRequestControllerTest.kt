@@ -36,7 +36,6 @@ class DriverSessionRequestControllerTest(
             Mockito.any(SessionRequestBody::class.java),
         )
 
-        // Perform the POST request and assert the response
         mockMvc.perform(
             post("/driver/session/authenticate")
                 .contentType(MediaType.APPLICATION_JSON)
