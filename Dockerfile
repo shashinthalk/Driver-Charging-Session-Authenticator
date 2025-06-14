@@ -1,5 +1,4 @@
 FROM openjdk:17-jdk-slim
-VOLUME /tmp
-ARG JAR_FILE=build/libs/*.jar
-COPY ${JAR_FILE} app.jar
+WORKDIR /app
+COPY build/libs/driver_charging_session_authenticator-1.0.0.jar app.jar
 ENTRYPOINT ["java", "-jar", "/app.jar"]
