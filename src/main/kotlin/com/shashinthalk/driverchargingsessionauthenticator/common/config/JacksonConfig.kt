@@ -1,11 +1,11 @@
-package com.shashinthalk.driver_charging_session_authenticator.common.config
+package com.shashinthalk.driverchargingsessionauthenticator.common.config
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.PropertyNamingStrategies
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter
 import org.springframework.context.annotation.Bean
-import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder
 import org.springframework.context.annotation.Configuration
+import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder
 
 @Configuration
 class JacksonConfig {

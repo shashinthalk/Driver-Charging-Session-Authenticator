@@ -20,29 +20,23 @@ repositories {
 }
 
 dependencies {
-
-    //Dependencies for development
+    // Dependencies for development
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
-    implementation ("io.projectreactor.kotlin:reactor-kotlin-extensions")
+    implementation("io.projectreactor.kotlin:reactor-kotlin-extensions")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
-    implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
     implementation("org.springframework.boot:spring-boot-starter-validation")
-
-    //Dependencies for AMQP
+    // Dependencies for AMQP
     implementation("org.springframework.boot:spring-boot-starter-amqp")
-
-    //Dependencies for jackson
+    // Dependencies for jackson
     implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml")
-
-    //Dependencies for OpenApi
-    implementation ("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.9")
-
-    //Dependencies for testing
+    // Dependencies for OpenApi
+    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.9")
+    // Dependencies for testing
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
-
 }
 
 kotlin {

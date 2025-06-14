@@ -1,4 +1,4 @@
-package com.shashinthalk.driver_charging_session_authenticator.common.config
+package com.shashinthalk.driverchargingsessionauthenticator.common.config
 
 import org.springframework.amqp.core.Queue
 import org.springframework.amqp.rabbit.connection.ConnectionFactory
@@ -10,10 +10,11 @@ import org.springframework.context.annotation.Configuration
 @Configuration
 class RabbitMQConfig {
     @Bean
-    fun authRequestQueue() = Queue(
-        "authRequestQueue",
-        false
-    )
+    fun authRequestQueue() =
+        Queue(
+            "authRequestQueue",
+            false,
+        )
 
     @Bean
     fun rabbitTemplate(connectionFactory: ConnectionFactory): RabbitTemplate {
