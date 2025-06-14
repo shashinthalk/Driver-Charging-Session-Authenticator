@@ -21,7 +21,6 @@ repositories {
 dependencies {
 
     //Dependencies for development
-    implementation("org.springframework.boot:spring-boot-starter-web")
     implementation ("org.springframework.boot:spring-boot-starter-webflux")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation ("io.projectreactor.kotlin:reactor-kotlin-extensions")
@@ -40,8 +39,10 @@ dependencies {
 
     //Dependencies for testing
     testImplementation("org.springframework.boot:spring-boot-starter-test")
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+    testImplementation("jakarta.servlet:jakarta.servlet-api:6.0.0")
 
 }
 

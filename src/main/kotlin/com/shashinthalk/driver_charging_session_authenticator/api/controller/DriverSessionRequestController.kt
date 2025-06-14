@@ -42,20 +42,16 @@ class DriverSessionRequestController(private val rabbitTemplate: RabbitTemplate)
     )
 
     @PostMapping("/authenticate")
-    suspend fun authenticateDriverSessionRequest(@Valid @RequestBody sessionRequestBody: SessionRequestBody) : ResponseEntity<RequestAcknowledgment>{
+     fun authenticateDriverSessionRequest(@Valid @RequestBody sessionRequestBody: SessionRequestBody) : ResponseEntity<RequestAcknowledgment>{
 
 
         return try{
-            withTimeout(10000){
-                withContext(Dispatchers.IO){
-                    rabbitTemplate.convertAndSend(queueName, sessionRequestBody)
-                    ResponseEntity.status(HttpStatus.ACCEPTED)
-                        .body(RequestAcknowledgment(
-                            status = "accepted",
-                            message = "Request is being processed asynchronously. The result will be sent to the provided callback URL."
-                        ))
-                }
-            }
+            rabbitTemplate.convertAndSend(queueName, sessionRequestBody)
+            ResponseEntity.status(HttpStatus.ACCEPTED)
+                .body(RequestAcknowledgment(
+                    status = "accepted",
+                    message = "Request is being processed asynchronously. The result will be sent to the provided callback URL."
+                ))
         }catch (ex: Exception){
             ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(RequestAcknowledgment(
