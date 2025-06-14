@@ -1,0 +1,6 @@
+.git
+*.md
+*.log
+node_modules
+build
+target
