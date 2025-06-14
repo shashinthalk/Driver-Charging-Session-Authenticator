@@ -6,7 +6,7 @@ on:
 
 env:
   JAR_NAME: driver_charging_session_authenticator-1.0.0.jar
-  LOCAL_JAR_PATH: libs/driver_charging_session_authenticator-1.0.0.jar
+  LOCAL_JAR_PATH: build/libs/driver_charging_session_authenticator-1.0.0.jar
   APP_DIR: /home/ec2-user/dcsl
 
 jobs:
