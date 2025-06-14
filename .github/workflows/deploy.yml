@@ -67,6 +67,14 @@ jobs:
             echo "Current directory: $(pwd)"
             echo "Files in directory:"
             ls -l
+            if [ ! -f "Dockerfile" ]; then
+              echo "ERROR: Dockerfile not found in $APP_DIR"
+              exit 1
+            fi
+            if [ ! -f "${JAR_NAME}" ]; then
+              echo "ERROR: JAR file not found in $APP_DIR"
+              exit 1
+            fi
             docker stop dcsl || true
             docker rm dcsl || true
             docker build -t dcsl .
