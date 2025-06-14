@@ -1,4 +1,4 @@
-name: DCSL
+name: DCSL Deploy
 
 on:
   push:
@@ -8,6 +8,12 @@ env:
   JAR_NAME: driver_charging_session_authenticator-1.0.0.jar
   LOCAL_JAR_PATH: build/libs/driver_charging_session_authenticator-1.0.0.jar
   APP_DIR: /home/ec2-user/dcsl
+  # RabbitMQ variables from secrets
+  RABBITMQ_HOST: ${{ secrets.RABBITMQ_HOST }}
+  RABBITMQ_PORT: ${{ secrets.RABBITMQ_PORT }}
+  RABBITMQ_USER: ${{ secrets.RABBITMQ_USER }}
+  RABBITMQ_PASSWORD: ${{ secrets.RABBITMQ_PASSWORD }}
+  RABBITMQ_VH: ${{ secrets.RABBITMQ_VH }}
 
 jobs:
   deploy:
@@ -27,10 +33,14 @@ jobs:
       - name: Build JAR (skip tests)
         run: ./gradlew bootJar -x test
 
-      - name: Ensure JAR exists
+      - name: Ensure JAR and Dockerfile exist
         run: |
           if [ ! -f "${{ env.LOCAL_JAR_PATH }}" ]; then
             echo "JAR file not found: ${{ env.LOCAL_JAR_PATH }}"
+            exit 1
+          fi
+          if [ ! -f "Dockerfile" ]; then
+            echo "Dockerfile not found in repo root."
             exit 1
           fi
 
@@ -39,13 +49,33 @@ jobs:
           ssh ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} "mkdir -p $APP_DIR"
           scp Dockerfile ${{ env.LOCAL_JAR_PATH }} ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}:$APP_DIR/
 
+      - name: Verify files on EC2
+        run: |
+          ssh ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} "ls -l $APP_DIR"
+
       - name: Deploy Docker container on EC2
+        env:
+          RABBITMQ_HOST: ${{ secrets.RABBITMQ_HOST }}
+          RABBITMQ_PORT: ${{ secrets.RABBITMQ_PORT }}
+          RABBITMQ_USER: ${{ secrets.RABBITMQ_USER }}
+          RABBITMQ_PASSWORD: ${{ secrets.RABBITMQ_PASSWORD }}
+          RABBITMQ_VH: ${{ secrets.RABBITMQ_VH }}
         run: |
           ssh ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << 'EOF'
             set -e
             cd $APP_DIR
+            echo "Current directory: $(pwd)"
+            echo "Files in directory:"
+            ls -l
             docker stop dcsl || true
             docker rm dcsl || true
             docker build -t dcsl .
-            docker run -d --name dcsl -p 3000:3000 dcsl
+            docker run -d --name dcsl \
+              -p 3000:3000 \
+              -e RABBITMQ_HOST="${RABBITMQ_HOST}" \
+              -e RABBITMQ_PORT="${RABBITMQ_PORT}" \
+              -e RABBITMQ_USER="${RABBITMQ_USER}" \
+              -e RABBITMQ_PASSWORD="${RABBITMQ_PASSWORD}" \
+              -e RABBITMQ_VH="${RABBITMQ_VH}" \
+              dcsl
           EOF
