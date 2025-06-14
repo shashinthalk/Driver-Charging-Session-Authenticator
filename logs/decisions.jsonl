@@ -1,0 +1,5 @@
+{"station_id":"123e4567-e89b-12d3-a456-426614174000","driver_id":"Abcdefghijklmnopqrstu-1234","status":"allowed"}
+{"station_id":"4dEC75D3-EDcb-5518-a1cE-fcf89BA7Ca5F","driver_id":"5Z_ecXx-K9kWJ8igfwc.oe~Hz9xtH42ImNv3DEktCTSMPCLk","status":"I/O error on POST request for \"http://.Jf=8D\": .Jf=8D"}
+{"station_id":"123e4567-e89b-12d3-a456-426614174000","driver_id":"Abcdefghijklmnopqrstu-1234","status":"allowed"}
+{"station_id":"123e4567-e89b-12d3-a456-426614174000","driver_token":"Abcdefghijklmnopqrstu-1234","status":"allowed"}
+{"station_id":"123e4567-e89b-12d3-a456-426614174000","driver_token":"Abcdefghijklmnopqrstu-1234","status":"429 Too Many Requests on POST request for \"https://webhook.site/13cd222f-7423-4056-ba73-84cf271a2d3e\": \"{\"success\":false,\"error\":{\"message\":\"Request limit exceeded. Sign up to unlock more requests.\",\"id\":\"\"}}\""}
