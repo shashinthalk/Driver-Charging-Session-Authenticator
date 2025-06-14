@@ -1,4 +1,4 @@
-package com.shashinthalk.driver_charging_session_authenticator
+package com.shashinthalk.driverchargingsessionauthenticator
 
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
