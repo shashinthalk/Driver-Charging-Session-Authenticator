@@ -27,8 +27,9 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
     implementation("org.springframework.boot:spring-boot-starter-validation")
-    // Dependencies for AMQP
-    implementation("org.springframework.boot:spring-boot-starter-amqp")
+    implementation("org.springframework.boot:spring-boot-starter-webflux")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
+    implementation("io.netty:netty-resolver-dns-native-macos:4.1.108.Final:osx-aarch_64")
     // Dependencies for jackson
     implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml")
     // Dependencies for OpenApi
