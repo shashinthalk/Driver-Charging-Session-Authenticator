@@ -2,13 +2,15 @@ package com.shashinthalk.driverchargingsessionauthenticator.api.controller
 
 import com.shashinthalk.driverchargingsessionauthenticator.api.dto.RequestAcknowledgment
 import com.shashinthalk.driverchargingsessionauthenticator.api.dto.SessionRequestBody
+import com.shashinthalk.driverchargingsessionauthenticator.authservice.service.AuthorizationService
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
 import jakarta.validation.Valid
-import org.springframework.amqp.rabbit.core.RabbitTemplate
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.PostMapping
@@ -18,9 +20,10 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @RequestMapping("/driver/session")
-class DriverSessionRequestController(private val rabbitTemplate: RabbitTemplate) {
-    private var queueName: String = "authRequestQueue"
-
+class DriverSessionRequestController(
+    private val authorizationService: AuthorizationService,
+    private val processScopeHandler: CoroutineScope
+) {
     @Operation(summary = "Start a charging session")
     @ApiResponses(
         value = [
@@ -37,11 +40,13 @@ class DriverSessionRequestController(private val rabbitTemplate: RabbitTemplate)
         ],
     )
     @PostMapping("/authenticate")
-    fun authenticateDriverSessionRequest(
+    suspend fun authenticateDriverSessionRequest(
         @Valid @RequestBody sessionRequestBody: SessionRequestBody,
     ): ResponseEntity<RequestAcknowledgment> {
         return try {
-            rabbitTemplate.convertAndSend(queueName, sessionRequestBody)
+            processScopeHandler.launch {
+                authorizationService.executeAuthorizationRequest(sessionRequestBody)
+            }
             ResponseEntity.status(HttpStatus.ACCEPTED)
                 .body(
                     RequestAcknowledgment(
