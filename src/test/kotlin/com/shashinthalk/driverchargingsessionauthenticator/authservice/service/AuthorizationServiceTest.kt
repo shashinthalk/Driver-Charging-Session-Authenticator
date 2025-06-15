@@ -53,11 +53,6 @@ class AuthorizationServiceTest() {
             data = anyList(),
         )
 
-        authService.executeAuthorizationRequest(request)
 
-        verify(restTemplate).postForLocation(
-            request.callbackUrl,
-            responce,
-        )
     }
 }

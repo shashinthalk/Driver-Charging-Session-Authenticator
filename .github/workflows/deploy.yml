@@ -1,38 +1,87 @@
-name: DCSL
+name: DCSL Deploy
 
 on:
   push:
     branches: [ main ]
+
+env:
+  JAR_NAME: driver_charging_session_authenticator-1.0.0.jar
+  LOCAL_JAR_PATH: build/libs/driver_charging_session_authenticator-1.0.0.jar
+  APP_DIR: /home/ec2-user/dcsl
+  # RabbitMQ environment variables from GitHub Secrets
+  RABBITMQ_HOST: ${{ secrets.RABBITMQ_HOST }}
+  RABBITMQ_PORT: ${{ secrets.RABBITMQ_PORT }}
+  RABBITMQ_USER: ${{ secrets.RABBITMQ_USER }}
+  RABBITMQ_PASSWORD: ${{ secrets.RABBITMQ_PASSWORD }}
+  RABBITMQ_VH: ${{ secrets.RABBITMQ_VH }}
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repo
+      - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Set up SSH
+      - name: Set up SSH key
         run: |
           mkdir -p ~/.ssh
           echo "${{ secrets.EC2_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
           ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
 
-      - name: Build JAR
+      - name: Build JAR (skip tests)
         run: ./gradlew bootJar -x test
 
-      - name: Copy files to EC2
+      - name: Check for JAR and Dockerfile
         run: |
-          ssh ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} "mkdir -p ${{ secrets.APP_DIR }}"
-          scp Dockerfile build/libs/*.jar ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}:${{ secrets.APP_DIR }}/
+          if [ ! -f "${{ env.LOCAL_JAR_PATH }}" ]; then
+            echo "JAR file not found at ${{ env.LOCAL_JAR_PATH }}"
+            exit 1
+          fi
+          if [ ! -f "Dockerfile" ]; then
+            echo "Dockerfile not found in repo root"
+            exit 1
+          fi
 
-      - name: Deploy Docker on EC2
+      - name: Copy Dockerfile and JAR to EC2
+        run: |
+          ssh ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} "mkdir -p $APP_DIR"
+          scp Dockerfile ${{ env.LOCAL_JAR_PATH }} ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}:$APP_DIR/
+
+      - name: Verify files on EC2
+        run: |
+          ssh ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} "ls -l $APP_DIR"
+
+      - name: Deploy Docker container on EC2
+        env:
+          RABBITMQ_HOST: ${{ secrets.RABBITMQ_HOST }}
+          RABBITMQ_PORT: ${{ secrets.RABBITMQ_PORT }}
+          RABBITMQ_USER: ${{ secrets.RABBITMQ_USER }}
+          RABBITMQ_PASSWORD: ${{ secrets.RABBITMQ_PASSWORD }}
+          RABBITMQ_VH: ${{ secrets.RABBITMQ_VH }}
         run: |
           ssh ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << 'EOF'
-            cd ${{ secrets.APP_DIR }}
+            set -e
+            cd $APP_DIR
+            echo "Current directory: $(pwd)"
+            echo "Files in directory:"
+            ls -l
+
+            # Stop and remove existing container if any
             docker stop dcsl || true
             docker rm dcsl || true
+
+            # Build the Docker image
             docker build -t dcsl .
-            docker run -d --name dcsl -p 3000:3000 dcsl
+
+            # Run the container with environment variables and port mapping
+            docker run -d --name dcsl \
+              -p 3000:3000 \
+              -e RABBITMQ_HOST="${RABBITMQ_HOST}" \
+              -e RABBITMQ_PORT="${RABBITMQ_PORT}" \
+              -e RABBITMQ_USER="${RABBITMQ_USER}" \
+              -e RABBITMQ_PASSWORD="${RABBITMQ_PASSWORD}" \
+              -e RABBITMQ_VH="${RABBITMQ_VH}" \
+              dcsl
           EOF
