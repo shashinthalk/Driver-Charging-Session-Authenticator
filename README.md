@@ -1,12 +1,5 @@
-<p align="center">
-    <img src="https://raw.githubusercontent.com/PKief/vscode-material-icon-theme/ec559a9f6bfd399b82bb44393651661b08aaf7ba/icons/folder-markdown-open.svg" align="center" width="30%">
-</p>
 <p align="center"><h1 align="center">DRIVER-CHARGING-SESSION-AUTHENTICATOR</h1></p>
 <p align="center">
-	<em><code>❯ REPLACE-ME</code></em>
-</p>
-<p align="center">
-	<img src="https://img.shields.io/github/license/shashinthalk/Driver-Charging-Session-Authenticator?style=default&logo=opensourceinitiative&logoColor=white&color=0080ff" alt="license">
 	<img src="https://img.shields.io/github/last-commit/shashinthalk/Driver-Charging-Session-Authenticator?style=default&logo=git&logoColor=white&color=0080ff" alt="last-commit">
 	<img src="https://img.shields.io/github/languages/top/shashinthalk/Driver-Charging-Session-Authenticator?style=default&color=0080ff" alt="repo-top-language">
 	<img src="https://img.shields.io/github/languages/count/shashinthalk/Driver-Charging-Session-Authenticator?style=default&color=0080ff" alt="repo-language-count">
@@ -38,13 +31,16 @@
 
 ##  Overview
 
-<code>❯ REPLACE-ME</code>
+At the API layer, a key principle is to protect underlying services from overload while ensuring optimal
+performance, even under high-traffic conditions. We employ an asynchronous queueing mechanism for
+communication with internal services to achieve this.
 
 ---
 
 ##  Features
 
-<code>❯ REPLACE-ME</code>
+
+Authorization Service
 
 ---
 
