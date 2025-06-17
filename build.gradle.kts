@@ -35,9 +35,14 @@ dependencies {
     // Dependencies for OpenApi
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.9")
     // Dependencies for testing
-    testImplementation("org.springframework.boot:spring-boot-starter-test")
+    testImplementation("org.springframework.boot:spring-boot-starter-test") {
+        exclude(module = "mockito-core")
+    }
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+    testImplementation("io.mockk:mockk:1.13.8")
+    testImplementation("com.ninja-squad:springmockk:4.0.2")
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.8.0")
 }
 
 kotlin {
