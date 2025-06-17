@@ -8,10 +8,25 @@ import kotlinx.coroutines.withContext
 import org.springframework.core.io.ClassPathResource
 import org.springframework.stereotype.Service
 
+/**
+ * Validating the driver token against to the station id
+ * Using a local ACL (Access Control List)
+ */
 @Service
 class AuthenticateHandler {
     private val objectMapper = jacksonObjectMapper()
 
+    /**
+     * Validates if a driverToken is allowed for the specified station id.
+     *
+     * Read data from `acl.json`. If the record is found, return "allowed".
+     * If no match is found, return "not allowed".
+     * If an error, return "unknown".
+     *
+     * @param stationId Station Identifier of the charging station
+     * @param driverToken Driver Identifier to be validated
+     * @return Authorization status: "allowed", "not allowed", or "unknown"
+     */
     suspend fun validateDriverAndStationWithAcl(
         stationId: String,
         driverToken: String,
