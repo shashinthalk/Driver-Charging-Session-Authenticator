@@ -413,7 +413,6 @@ This will run all unit tests and integration tests, giving you confidence that y
 The service provides RESTful endpoints for managing driver charging session authentication. Here are the main endpoints you'll be working with:
 
 - **POST** `/driver/session/authenticate` - Authenticate a driver charging session
-- **GET** `/health` - Health check endpoint
 - **GET** `/swagger-ui/index.html` - API documentation (Swagger UI)
 
 *For detailed API documentation, visit:* https://shashinthalk.cc/dcsl/swagger-ui/index.html
