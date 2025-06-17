@@ -6,6 +6,10 @@ import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
 
+/**
+ * Handle errors from REST endpoints and cleans them up for the frontend.
+ * All the error messages by field, so they're easy to display.
+ */
 @RestControllerAdvice
 class ValidationExceptionHandler {
     @ExceptionHandler(MethodArgumentNotValidException::class)

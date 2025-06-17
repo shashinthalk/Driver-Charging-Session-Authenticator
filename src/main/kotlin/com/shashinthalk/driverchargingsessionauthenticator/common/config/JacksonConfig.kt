@@ -13,5 +13,4 @@ class JacksonConfig {
         builder
             .propertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE)
             .build<ObjectMapper>()
-
 }
