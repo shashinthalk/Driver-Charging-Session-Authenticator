@@ -10,12 +10,18 @@ import java.nio.file.Files
 import java.nio.file.Paths
 
 /**
- * This service saves decision data to a JSONL file - basically a log where each decision
- * gets its own line as a JSON object. This makes it really easy to add new decisions
- * without touching existing ones, and quickly scan through the file to see what happened.
+ * This service saves decision data to a JSONL file
+ * Gets its own line as a JSON object
  **/
 @Service
 class DecisionLogger(private val objectMapper: ObjectMapper) {
+    /**
+     * Save a list of decision log entries in the log file.
+     *
+     * @param logsDir Directory of the log file
+     * @param fileName Name of the log file
+     * @param data List of decisions
+     */
     suspend fun saveDecisionLog(
         logsDir: String = "logs",
         fileName: String = "decisions.jsonl",

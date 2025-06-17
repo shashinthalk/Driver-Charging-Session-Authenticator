@@ -21,23 +21,33 @@ class AuthorizationService(
 ) {
     var status: String = ""
 
+    /**
+     * Executes the authorization process for a given charging session request.
+     *
+     * @param request - Contains stationId, driverToken, and callbackUrl
+     *
+     * Validate the driver and station
+     * Delay only for the simulation - authorization process is not complex right now
+     * Once we implement the real authorization process, no longer needed the delay
+     * Sends the authorization status to the provided callback URL.
+     * If it times out (after 10 seconds), it sends an "unknown" status.
+     */
     suspend fun executeAuthorizationRequest(request: SessionRequestBody) {
         val (stationId, driverToken, callbackUrl) = request
         try {
-            withTimeout(
-                10_000,
-            ) {
-                val duration =
-                    Random.nextLong(
-                        9_000L,
-                        11_001L,
-                    )
+            withTimeout(10_000) {
+                // Simulate processing delay between 9 and 11 seconds (random)
+                // Only for simulation
+                val duration = Random.nextLong(9_000L, 11_001L)
+
                 status =
                     authenticateHandler.validateDriverAndStationWithAcl(
                         stationId = stationId,
                         driverToken = driverToken,
                     )
+
                 delay(duration)
+
                 statusAndLoggerHandler(
                     CallbackBody(
                         stationId = stationId,
@@ -59,28 +69,28 @@ class AuthorizationService(
         }
     }
 
+    /**
+     * Handles sending the callback to the callback url and log the decision.
+     *
+     * @param callback - The data containing stationId, driverToken, and status
+     * @param callbackUrl - The url to post callback data
+     *
+     * This method sends a POST request with the callback. If successful,
+     * It logs the decision. If the request fails, it logs the error with stationId and driverToken details
+     */
     suspend fun statusAndLoggerHandler(
         callback: CallbackBody,
         callbackUrl: String,
     ) {
         try {
             webClient.post()
-                .uri(
-                    callbackUrl,
-                )
-                .bodyValue(
-                    callback,
-                )
+                .uri(callbackUrl)
+                .bodyValue(callback)
                 .retrieve()
                 .toBodilessEntity()
                 .awaitSingle()
-            decisionLogger
-                .saveDecisionLog(
-                    data =
-                        listOf(
-                            callback,
-                        ),
-                )
+
+            decisionLogger.saveDecisionLog(data = listOf(callback))
         } catch (e: WebClientResponseException) {
             decisionLogger
                 .saveDecisionLog(
