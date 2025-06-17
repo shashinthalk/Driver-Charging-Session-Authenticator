@@ -406,7 +406,7 @@ This will run all unit tests and integration tests, giving you confidence that y
 
 ##  API Endpoints
 
-🚀 **Live API:** https://shashinthalk.cc/dcsl
+🚀 **Live API:** https://api.shashinthalk.cc/dcsl
 
 ### Available Endpoints
 
@@ -415,5 +415,5 @@ The service provides RESTful endpoints for managing driver charging session auth
 - **POST** `/driver/session/authenticate` - Authenticate a driver charging session
 - **GET** `/swagger-ui/index.html` - API documentation (Swagger UI)
 
-*For detailed API documentation, visit:* https://shashinthalk.cc/dcsl/swagger-ui/index.html
+*For detailed API documentation, visit:* https://api.shashinthalk.cc/dcsl/swagger-ui/index.html
 
