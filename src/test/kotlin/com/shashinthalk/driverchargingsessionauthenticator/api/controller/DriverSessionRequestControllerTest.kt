@@ -15,7 +15,6 @@ import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.context.annotation.Bean
@@ -23,12 +22,12 @@ import org.springframework.context.annotation.Import
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.post
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.asyncDispatch
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 
 @WebMvcTest(DriverSessionRequestController::class)
-@Import(
-    DriverSessionRequestControllerTest.MockConfig::class,
-    JacksonAutoConfiguration::class,
-)
+@Import(DriverSessionRequestControllerTest.MockConfig::class)
 class DriverSessionRequestControllerTest(
     @Autowired val mockMvc: MockMvc,
     @Autowired val objectMapper: ObjectMapper,
@@ -60,39 +59,45 @@ class DriverSessionRequestControllerTest(
     }
 
     @Test
-    fun `should accept valid session request and call authorizationService`() {
+    fun `accept valid session request and call authorization service`() {
         val request =
             SessionRequestBody(
-                driverToken = "validDriverToken01334",
-                stationId = "b3b4b3b4-3b4b-4b4b-8b4a-3b4e4f4b4b4b",
-                callbackUrl = "https://webhook.site/60eb45b1-1ae5-4a6c-8a76-16fb6eb2b766",
+                "b3b4b3b4-3b4b-4b4b-8b4a-3b4e4f4b4b4b",
+                "validDriverToken01334",
+                "https://webhook.site/60eb45b1-1ae5-4a6c-8a76-16fb6eb2b766",
             )
-
-        mockMvc.post("/driver/session/authenticate") {
-            contentType = MediaType.APPLICATION_JSON
-            content = objectMapper.writeValueAsString(request)
-        }
-            .andExpect {
-                status { isAccepted() }
-                jsonPath("$.status") {
-                    value("accepted")
-                }
-                jsonPath("$.message") {
-                    value("Request is being processed asynchronously. The result will be sent to the provided callback URL.")
-                }
+        val mvcResult =
+            mockMvc.post("/driver/session/authenticate") {
+                contentType = MediaType.APPLICATION_JSON
+                content = objectMapper.writeValueAsString(request)
             }
+                .andExpect {
+                    request { asyncStarted() }
+                }
+                .andReturn()
 
+        mockMvc.perform(asyncDispatch(mvcResult))
+            .andExpect(
+                status().isAccepted,
+            )
+            .andExpect(
+                jsonPath("$.status")
+                    .value("accepted"),
+            )
+            .andExpect(
+                jsonPath("$.message")
+                    .value("Request is being processed asynchronously. The result will be sent to the provided callback URL."),
+            )
         coVerify(exactly = 1) { authorizationService.executeAuthorizationRequest(request) }
     }
 
     @Test
-    fun `should return bad request for missing driverToken`() {
+    fun `return bad request for missing driver token`() {
         val invalidRequest =
             mapOf(
                 "station_id" to "b3b4b3b4-3b4b-4b4b-8b4a-3b4e4f4b4b4b",
                 "callback_url" to "https://webhook.site/60eb45b1-1ae5-4a6c-8a76-16fb6eb2b766",
             )
-
         mockMvc.post("/driver/session/authenticate") {
             contentType = MediaType.APPLICATION_JSON
             content = objectMapper.writeValueAsString(invalidRequest)
