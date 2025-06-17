@@ -18,12 +18,20 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
+/**
+ * REST controller for driver session - handles charging session validation requests
+ * when someone's at a charging station.
+ *
+ * This provides an endpoint to start a session for
+ * checking if the driver is valid, making sure the station and driver are legit
+ **/
 @RestController
 @RequestMapping("/driver/session")
 class DriverSessionRequestController(
     private val authorizationService: AuthorizationService,
-    private val processScopeHandler: CoroutineScope
+    private val processScopeHandler: CoroutineScope,
 ) {
+    // Open API Configuration for endpoint response details
     @Operation(summary = "Start a charging session")
     @ApiResponses(
         value = [
@@ -39,6 +47,13 @@ class DriverSessionRequestController(
             ),
         ],
     )
+    /**
+     * Authenticates a driver session based on the request
+     *
+     * @param sessionRequestBody Contains the driver's token, station id and call back url (from the request body).
+     * @return An accepted acknowledgment if the request is successfully submitted.
+     * @throws Exception if the request is not submitted.
+     */
     @PostMapping("/authenticate")
     suspend fun authenticateDriverSessionRequest(
         @Valid @RequestBody sessionRequestBody: SessionRequestBody,
@@ -59,7 +74,7 @@ class DriverSessionRequestController(
                 .body(
                     RequestAcknowledgment(
                         status = "error",
-                        message = ex.message,
+                        message = ex.message.toString(),
                     ),
                 )
         }

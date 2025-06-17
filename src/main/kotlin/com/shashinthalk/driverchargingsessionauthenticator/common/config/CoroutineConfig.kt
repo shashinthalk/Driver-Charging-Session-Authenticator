@@ -9,7 +9,8 @@ import org.springframework.context.annotation.Configuration
 @Configuration
 class CoroutineConfig {
     @Bean
-    fun processScopeHandler() = CoroutineScope(
-        SupervisorJob() + Dispatchers.Default
-    )
+    fun processScopeHandler() =
+        CoroutineScope(
+            SupervisorJob() + Dispatchers.Default,
+        )
 }
