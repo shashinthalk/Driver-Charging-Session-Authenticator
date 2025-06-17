@@ -400,7 +400,6 @@ We've got comprehensive tests to make sure everything works as expected. Run the
 ❯ ./gradlew test
 ```
 
-This will run all unit tests and integration tests, giving you confidence that your authentication service is rock solid.
 
 ---
 
