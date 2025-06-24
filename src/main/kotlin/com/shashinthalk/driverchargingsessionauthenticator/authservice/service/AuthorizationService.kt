@@ -10,6 +10,7 @@ import kotlinx.coroutines.reactive.awaitSingle
 import kotlinx.coroutines.withTimeout
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.client.WebClient
+import org.springframework.web.reactive.function.client.WebClientRequestException
 import org.springframework.web.reactive.function.client.WebClientResponseException
 import kotlin.random.Random
 
@@ -100,6 +101,18 @@ class AuthorizationService(
                                 stationId = callback.stationId,
                                 driverToken = callback.driverToken,
                                 status = e.message,
+                            ),
+                        ),
+                )
+        } catch (e: WebClientRequestException) {
+            decisionLogger
+                .saveDecisionLog(
+                    data =
+                        listOf(
+                            CallbackBody(
+                                stationId = callback.stationId,
+                                driverToken = callback.driverToken,
+                                status = e.message.toString(),
                             ),
                         ),
                 )

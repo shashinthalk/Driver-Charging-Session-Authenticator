@@ -21,7 +21,6 @@ repositories {
 
 dependencies {
     // Dependencies for development
-    implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("io.projectreactor.kotlin:reactor-kotlin-extensions")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
@@ -33,7 +32,7 @@ dependencies {
     // Dependencies for jackson
     implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml")
     // Dependencies for OpenApi
-    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.9")
+    implementation("org.springdoc:springdoc-openapi-starter-webflux-ui:2.8.9")
     // Dependencies for testing
     testImplementation("org.springframework.boot:spring-boot-starter-test") {
         exclude(module = "mockito-core")

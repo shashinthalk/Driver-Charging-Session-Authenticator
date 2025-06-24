@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.CrossOrigin
 
 /**
  * REST controller for driver session - handles charging session validation requests
@@ -25,6 +26,7 @@ import org.springframework.web.bind.annotation.RestController
  * This provides an endpoint to start a session for
  * checking if the driver is valid, making sure the station and driver are legit
  **/
+@CrossOrigin(origins = ["http://localhost:3001"])
 @RestController
 @RequestMapping("/driver/session")
 class DriverSessionRequestController(
